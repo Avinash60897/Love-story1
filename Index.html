@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Friendship - Full Story</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    background: #0b141a; color: #e9edef;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 12px; padding: 12px;
+  }
+
+  #video {
+    width: min(94vw, 420px); height: min(84vh, 780px);
+    border-radius: 26px; overflow: hidden;
+    display: flex; flex-direction: column;
+    background: #0b141a;
+    box-shadow: 0 30px 80px rgba(0,0,0,.6);
+  }
+
+  /* ---------- introduction ---------- */
+  #intro {
+    flex: 1; overflow-y: auto; padding: 20px 16px;
+    display: flex; flex-direction: column; gap: 14px;
+    background: linear-gradient(#2b1f45, #15102a);
+  }
+  #intro h2 { font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: #ffd6a5; text-align: center; }
+  .floatbox {
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,214,165,.35);
+    border-radius: 16px; padding: 14px 16px; opacity: 0; transform: translateY(10px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .floatbox.show { opacity: 1; transform: none; }
+  .floatbox .tag { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #ff8fa3; margin-bottom: 6px; }
+  .floatbox p { font-size: 15px; line-height: 1.5; color: #f5f7ff; }
+
+  /* ---------- body: dark whatsapp chat ---------- */
+  #body { flex: 1; display: none; flex-direction: column; }
+  #body.show { display: flex; }
+  #header {
+    background: #1f2c34; color: #e9edef; padding: 12px 14px;
+    display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #2a3942;
+  }
+  #header .avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, #ff8fa3, #ffd6a5);
+    display: flex; align-items: center; justify-content: center;
+    color: #3a1d2b; font-weight: 700;
+  }
+  #header .name { font-weight: 600; font-size: 16px; }
+  #header .sub { font-size: 12px; color: #8696a0; }
+  #log {
+    flex: 1; overflow-y: auto; padding: 14px 12px 18px;
+    display: flex; flex-direction: column; gap: 8px;
+    background-color: #0b141a;
+    background-image: radial-gradient(rgba(255,255,255,.035) 1.2px, transparent 1.3px);
+    background-size: 22px 22px;
+    scrollbar-width: thin; scrollbar-color: #3b4a54 transparent;
+    scroll-behavior: smooth;
+  }
+  #log::-webkit-scrollbar { width: 6px; }
+  #log::-webkit-scrollbar-thumb { background: #3b4a54; border-radius: 3px; }
+  .row { display: flex; animation: rowIn .45s cubic-bezier(.2,.9,.3,1.2) both; }
+  @keyframes rowIn { from { opacity: 0; transform: translateY(12px) scale(.96); } to { opacity: 1; transform: none; } }
+  .typing .bubble { padding: 11px 14px; }
+  .typing span { display: inline-block; width: 7px; height: 7px; margin: 0 2px; border-radius: 50%; background: #8696a0; animation: dot 1s infinite; }
+  .typing span:nth-child(2) { animation-delay: .15s; }
+  .typing span:nth-child(3) { animation-delay: .3s; }
+  @keyframes dot { 0%,80%,100% { transform: translateY(0); opacity: .35; } 40% { transform: translateY(-4px); opacity: 1; } }
+  .row.me { justify-content: flex-end; }
+  .row.her { justify-content: flex-start; }
+  .bubble {
+    max-width: 80%; padding: 7px 10px; border-radius: 9px; font-size: 14.5px; line-height: 1.4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.3); white-space: pre-wrap; word-wrap: break-word;
+  }
+  .me .bubble { background: #005c4b; color: #e9edef; border-top-right-radius: 2px; }
+  .her .bubble { background: #202c33; color: #e9edef; border-top-left-radius: 2px; }
+  .deleted { align-self: center; font-style: italic; color: #8696a0; background: #1f2c34; padding: 7px 12px; border-radius: 8px; font-size: 13px; }
+  .chip { align-self: center; background: #1f2c34; color: #8696a0; font-size: 12px; padding: 5px 12px; border-radius: 8px; }
+  #footer { background: #1f2c34; padding: 8px 10px; display: flex; align-items: center; gap: 8px; }
+  #footer .input { flex: 1; background: #2a3942; border-radius: 22px; padding: 10px 14px; font-size: 14px; color: #8696a0; }
+  #footer .mic { width: 42px; height: 42px; border-radius: 50%; background: #00a884; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+
+  /* ---------- controls ---------- */
+  #controls { display: flex; gap: 10px; align-items: center; }
+  #controls button { background: #1f2c34; color: #e9edef; border: 1px solid #2a3942; border-radius: 999px; padding: 8px 16px; cursor: pointer; font-size: 14px; }
+  #controls button:hover { background: #2a3942; }
+  #bar { width: min(94vw, 420px); height: 4px; background: #1f2c34; border-radius: 4px; overflow: hidden; }
+  #bar i { display: block; height: 100%; width: 0; background: #00a884; transition: width .4s linear; }
+</style>
+</head>
+<body>
+
+<div id="video">
+  <!-- Introduction: the scenes before the chat -->
+  <div id="intro">
+    <h2>Introduction</h2>
+  </div>
+
+  <!-- Body: the messaging (green = me, dark = her) -->
+  <div id="body">
+    <div id="header">
+      <div class="avatar">A</div>
+      <div>
+        <div class="name">Avinash Fr...</div>
+        <div class="sub" id="status">online</div>
+      </div>
+    </div>
+    <div id="log"><div class="chip">Today</div></div>
+    <div id="footer">
+      <div class="input">Message</div>
+      <div class="mic">&#127897;</div>
+    </div>
+  </div>
+</div>
+
+<div id="bar"><i id="barfill"></i></div>
+<div id="controls">
+  <button id="restart">&#8635; Restart</button>
+  <button id="toggle">Pause</button>
+</div>
+
+<script>
+/* ================= introduction ================= */
+const INTRO = [
+  { tag: "Math class", text: "I keep looking at her in class. When she looks back, I quickly hide my face." },
+  { tag: "The next day, on the bus", text: "I ask her if she asked Rithvik anything. She says no, then: \"Finally, you got the courage to ask me a question!\" I feel very happy." },
+  { tag: "That evening", text: "After school, I sit on the sofa and message her first." }
+];
+
+/* ================= messages, in screenshot order, no repeats ================= */
+const CHAT = [
+  ["me", "Ok"],
+  ["me", "I'll tell"],
+  ["me", "It's very personal and I know you will be shocked knowing this"],
+  ["me", "I know this will feel like I lied to you all these days"],
+  ["me", "But I feel like it would be a nice option to tell it to that person"],
+  ["me", "If you won't panic then read or else close this chat immediately"],
+  ["me", "I just wanted to tell you one honest thing so I don't feel guilty anymore. Remember when you asked me if I liked you and I said no? Actually, I got scared back then and lied because I didn't want to lose our friendship. I have felt this from last year itself. I do still have feelings for you, and I just wanted to tell you the truth to clear my mind. Please don't take any serious actions. I just want our friendship between us to stay normal like before. I still clearly don't know the reason. Maybe it is because of rumours or just pressure. Anyways I feel kinda relaxed that you know about this"],
+  ["her", "And I have felt this from last year itself"],
+  ["her", "I was just too scared to tell you"],
+  ["her", "But when you itself told me today that you have to overcome your fears"],
+  ["her", "I felt that there is nothing that I fear anymore"],
+  ["her", "That's all I wanted to tell you"],
+  ["me", "I just hope our friendship stays the same"],
+  ["her", "Aww"],
+  ["her", "Tysm fr telling me"],
+  ["her", "Yes indeed"],
+  ["her", "It will stay the same dw"],
+  ["her", "I KNEW ITTTTTTT"],
+  ["her", "It was at the bck of my minddddd"],
+  ["her", "AHAHAHAHAHA im so tufffff"],
+  ["her", "But whts up w/ ur 'A'??"],
+  ["her", "😙"],
+  ["me", "Ummm"],
+  ["her", "Thanks to you for considering it as a friend!"],
+  ["her", "Blush"],
+  ["her", "...."],
+  ["her", "Thank you soo much"],
+  ["me", "Blush w/ a ......."],
+  ["me", "Lol"],
+  ["me", "It just feels soo good now"],
+  ["her", "?"],
+  ["me", "Ahm u still didn't reply."],
+  ["her", "I don't understand"],
+  ["me", "Wdym?"],
+  ["deleted", "This message was deleted"],
+  ["me", "Yes I am"],
+  ["me", "But she is no match to you"],
+  ["me", "You are a better person"],
+  ["her", "Oof"],
+  ["me", "That is just like a parallel life"],
+  ["me", "My life with you guys are the real one for me"],
+  ["me", "You knew from before that I liked you?"],
+  ["me", "How?"],
+  ["me", "Umm Hello?"],
+  ["me", "Are you there?"],
+  ["me", "It's ok leave"],
+  ["me", "Thanks for understanding me.\nI thought you would for once second see it and forever cut our friendship but NO! YOU DIDNT, CAUSE YOU ARE UNIQUE!! Than any other friend of mine. Actually in my old school too i liked a girl soo much but she never did. I wanted to tell her like what I told you now but when I told, she was shocked and our friendship ended right there. I still miss my friendship with her and that friendship was very large! We spent whole days talking about our life and school and friendship, but my fate decided otherwise and I lost such a good friend. I thought same was going to happen with you too but u are more better understanding friend that I didn't realise till now. anjushree is also a good friend but she is the one who liked me rather than me liking her so it's not a close friendship for me with her. Even if a girl most kind and loving becomes my close friend, it will either be YOU OR NO ONE ELSE!!!!!! Thanks for being such a good friend for me. 🥲"],
+  ["her", "it was fun talking with you, i am happy you told me you feelings, bye"]
+];
+
+/* ================= engine ================= */
+const intro = document.getElementById("intro");
+const body = document.getElementById("body");
+const log = document.getElementById("log");
+const barfill = document.getElementById("barfill");
+const toggleBtn = document.getElementById("toggle");
+
+const INTRO_STEP = 2200;
+const CHAT_STEP = 1100;
+
+let timer = null;
+let playing = true;
+let queue = [];
+let total = 0;
+let done = 0;
+
+function esc(t) { return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+function scrollEnd() { log.scrollTop = log.scrollHeight; }
+function progress() { barfill.style.width = `${(done / total) * 100}%`; }
+
+function buildQueue() {
+  queue = [];
+  INTRO.forEach(b => queue.push({ kind: "intro", data: b }));
+  queue.push({ kind: "switch" });
+  CHAT.forEach(([who, text]) => queue.push({ kind: "msg", who, text }));
+  queue.push({ kind: "end" });
+  total = INTRO.length + CHAT.length;
+}
+
+function runAction(a) {
+  if (a.kind === "intro") {
+    const box = document.createElement("div");
+    box.className = "floatbox";
+    box.innerHTML = `<div class="tag">${esc(a.data.tag)}</div><p>${esc(a.data.text)}</p>`;
+    intro.appendChild(box);
+    requestAnimationFrame(() => requestAnimationFrame(() => box.classList.add("show")));
+    done++;
+    return INTRO_STEP;
+  }
+  if (a.kind === "switch") {
+    intro.style.display = "none";
+    body.classList.add("show");
+    return 600;
+  }
+  if (a.kind === "msg") {
+    const row = document.createElement("div");
+    if (a.who === "deleted") {
+      row.className = "deleted";
+      row.textContent = a.text;
+    } else {
+      row.className = `row ${a.who === "me" ? "me" : "her"} typing`;
+      row.innerHTML = `<div class="bubble"><span></span><span></span><span></span></div>`;
+      setTimeout(() => {
+        row.className = `row ${a.who === "me" ? "me" : "her"}`;
+        row.innerHTML = `<div class="bubble">${esc(a.text)}</div>`;
+        scrollEnd();
+      }, 800);
+    }
+    log.appendChild(row);
+    scrollEnd();
+    done++;
+    return CHAT_STEP;
+  }
+  if (a.kind === "end") {
+    toggleBtn.textContent = "Replay";
+    playing = false;
+    return null;
+  }
+}
+
+function pump() {
+  clearTimeout(timer);
+  if (!playing || queue.length === 0) return;
+  const a = queue.shift();
+  const wait = runAction(a);
+  progress();
+  if (wait !== null) timer = setTimeout(pump, wait);
+}
+
+function restart() {
+  clearTimeout(timer);
+  intro.innerHTML = "<h2>Introduction</h2>";
+  intro.style.display = "flex";
+  body.classList.remove("show");
+  log.innerHTML = '<div class="chip">Today</div>';
+  done = 0; playing = true;
+  toggleBtn.textContent = "Pause";
+  barfill.style.width = "0%";
+  buildQueue();
+  pump();
+}
+
+toggleBtn.addEventListener("click", () => {
+  if (queue.length === 0) { restart(); return; }
+  playing = !playing;
+  toggleBtn.textContent = playing ? "Pause" : "Play";
+  if (playing) pump(); else clearTimeout(timer);
+});
+
+document.getElementById("restart").addEventListener("click", restart);
+document.addEventListener("keydown", e => { if (e.key === " ") { e.preventDefault(); toggleBtn.click(); } });
+
+restart();
+</script>
+</body>
+</html>
